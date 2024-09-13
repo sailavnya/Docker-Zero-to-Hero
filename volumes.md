@@ -15,7 +15,7 @@ There are 2 different ways how docker solves this problem.
 ### Volumes 
 
 Volumes aims to solve the same problem by providing a way to store data on the host file system, separate from the container's file system, 
-so that the data can persist even if the container is deleted and recreated.
+so that the data can persist even if the container is deleted and recreated and it has the high performance.
 
 ![image](https://user-images.githubusercontent.com/43399466/218018334-286d8949-d155-4d55-80bc-24827b02f9b1.png)
 
@@ -23,15 +23,29 @@ so that the data can persist even if the container is deleted and recreated.
 Volumes can be created and managed using the docker volume command. You can create a new volume using the following command:
 
 ```
-docker volume create <volume_name>
-```
+--> docker volume create <volume_name>
+``````````````
+--> docker volume inspect <volume_name>
 
-Once a volume is created, you can mount it to a container using the -v or --mount option when running a docker run command. 
+to check the details of a particular volume
+
+````````````````
+docker volume rm <volume_name1> <volume_name2>  (if the volume is not in use we can delete but if it is connected with container first we need to delete container.)
+
+to delete the multiple volume
+``````````````````
+
+
+Once a volume is created, you can mount it to a container using the **-v or --mount (can elaborate much)** option when running a docker run command. 
 
 For example:
 
 ```
 docker run -it -v <volume_name>:/data <image_name> /bin/bash
+
+or
+
+docker run -d --mount source=<volume_name>,target=<file_name> <image-name:latest>
 ```
 
 This command will mount the volume <volume_name> to the /data directory in the container. Any data written to the /data directory
@@ -53,8 +67,18 @@ docker run -it -v <host_path>:<container_path> <image_name> /bin/bash
 ## Key Differences between Volumes and Bind Directory on a host as a Mount
 
 Volumes are managed, created, mounted and deleted using the Docker API. However, Volumes are more flexible than bind mounts, as 
-they can be managed and backed up separately from the host file system, and can be moved between containers and hosts.
+they can be managed and backed up separately from the host file system, and can be moved between containers and hosts (volumes can be used with external host and also within the host, we can manage using docker commands).
 
 In a nutshell, Bind Directory on a host as a Mount are appropriate for simple use cases where you need to mount a directory from the host file system into
 a container, while volumes are better suited for more complex use cases where you need more control over the data being persisted
 in the container.
+
+
+
+**problems before using bind mounts and volumes:**
+
+1) A container didn't have a way of writing the prevoius logs that means the nginx doesn't have the pervious log files.
+2) if there is a classic frontend and backend which tries to interact with each other but when frontend goes down for some reason will not get the logs of forntend.
+3) if your app tries to read some files from host operating system it doesn't know how to read that.
+
+
